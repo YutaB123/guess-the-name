@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guess the Name</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="game-body">
+
+  <!-- ── Lobby ── -->
+  <div id="screen-lobby" class="screen center-screen">
+    <div id="lobby-loading" class="lobby-state">
+      <div class="spinner"></div>
+      <p class="loading-text">Connecting…</p>
+    </div>
+    <div id="lobby-waiting" class="lobby-state hidden">
+      <div class="waiting-card">
+        <div class="waiting-icon">🧠</div>
+        <h2>Waiting for opponent</h2>
+        <p class="waiting-hint">Share this code with your friend:</p>
+        <div class="room-code" id="room-code-display">——</div>
+        <p class="waiting-hint">Or share a direct link:</p>
+        <div class="share-row">
+          <input id="share-link" class="share-input" readonly />
+          <button id="copy-btn" class="btn btn-small btn-secondary">Copy</button>
+        </div>
+        <a href="/" class="btn btn-ghost">Cancel</a>
+      </div>
+    </div>
+    <div id="lobby-error" class="lobby-state hidden">
+      <div class="error-card">
+        <div class="error-icon">✕</div>
+        <p id="error-msg" class="error-text">Something went wrong.</p>
+        <a href="/" class="btn btn-primary">Go Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Hinter screen ── -->
+  <div id="screen-hinter" class="screen hidden">
+    <header class="game-header">
+      <a href="/" class="back-link">← Home</a>
+      <span class="header-title">Guess the Name</span>
+      <div id="hdr-scores" class="hdr-scores"></div>
+    </header>
+
+    <!-- Setup state -->
+    <div id="hinter-setup" class="center-screen">
+      <div class="hinter-card">
+        <div class="round-badge" id="hinter-round">Round 1</div>
+        <h2 class="section-title">You're the Hinter! 💡</h2>
+        <p class="section-sub">Pick a topic and write 5 clues — hardest first.</p>
+
+        <div class="field-group">
+          <label class="field-label">Category</label>
+          <div class="cat-grid">
+            <button class="cat-btn" data-cat="person">👤 Person</button>
+            <button class="cat-btn" data-cat="food">🍕 Food</button>
+            <button class="cat-btn" data-cat="object">📦 Object</button>
+            <button class="cat-btn" data-cat="place">📍 Place</button>
+            <button class="cat-btn" data-cat="movie">🎬 Movie / Show</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="answer-input">Answer <span class="muted">(kept secret)</span></label>
+          <input id="answer-input" class="field-input" type="text" placeholder="e.g. Taylor Swift" autocomplete="off" spellcheck="false" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Hints <span class="muted">(hardest → easiest)</span></label>
+          <div class="hints-form">
+            <div class="hint-form-row"><span class="pts-badge c5">5 pts</span><input class="field-input hint-input" type="text" placeholder="Hardest clue" autocomplete="off" /></div>
+            <div class="hint-form-row"><span class="pts-badge c4">4 pts</span><input class="field-input hint-input" type="text" placeholder="Still tricky" autocomplete="off" /></div>
+            <div class="hint-form-row"><span class="pts-badge c3">3 pts</span><input class="field-input hint-input" type="text" placeholder="Medium" autocomplete="off" /></div>
+            <div class="hint-form-row"><span class="pts-badge c2">2 pts</span><input class="field-input hint-input" type="text" placeholder="Getting easier" autocomplete="off" /></div>
+            <div class="hint-form-row"><span class="pts-badge c1">1 pt</span> <input class="field-input hint-input" type="text" placeholder="Easiest clue" autocomplete="off" /></div>
+          </div>
+        </div>
+
+        <button id="submit-hints-btn" class="btn btn-primary full-width" disabled>Submit Hints</button>
+      </div>
+    </div>
+
+    <!-- Waiting state -->
+    <div id="hinter-waiting" class="center-screen hidden">
+      <div class="hw-card">
+        <div class="hw-icon">⏳</div>
+        <h2>Hints submitted!</h2>
+        <div id="hw-answer" class="hw-answer-box"></div>
+        <p class="muted" style="font-size:14px">Waiting for opponent to guess…</p>
+        <div class="hint-tracker" id="hint-tracker">
+          <div class="ht-item" data-n="1"><span class="ht-n">Hint 1</span><span class="ht-pts">5 pts</span></div>
+          <div class="ht-item" data-n="2"><span class="ht-n">Hint 2</span><span class="ht-pts">4 pts</span></div>
+          <div class="ht-item" data-n="3"><span class="ht-n">Hint 3</span><span class="ht-pts">3 pts</span></div>
+          <div class="ht-item" data-n="4"><span class="ht-n">Hint 4</span><span class="ht-pts">2 pts</span></div>
+          <div class="ht-item" data-n="5"><span class="ht-n">Hint 5</span><span class="ht-pts">1 pt</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Guesser screen ── -->
+  <div id="screen-guesser" class="screen hidden">
+    <header class="game-header">
+      <a href="/" class="back-link">← Home</a>
+      <span class="header-title">Guess the Name</span>
+      <div id="hdr-scores-g" class="hdr-scores"></div>
+    </header>
+
+    <!-- Waiting -->
+    <div id="guesser-waiting" class="center-screen">
+      <div class="gw-card">
+        <div class="spinner"></div>
+        <p class="loading-text">Opponent is choosing a topic…</p>
+        <div class="round-badge" id="guesser-round" style="margin-top:16px">Round 1</div>
+      </div>
+    </div>
+
+    <!-- Playing -->
+    <div id="guesser-playing" class="guesser-playing hidden">
+      <div class="guesser-layout">
+
+        <div class="hints-panel">
+          <div class="hints-meta">
+            <span class="cat-tag" id="cat-tag">—</span>
+            <span class="pts-pill" id="pts-pill">Worth <b>5</b> pts</span>
+          </div>
+          <div id="hints-list" class="hints-list-revealed"></div>
+        </div>
+
+        <div class="guess-panel">
+          <div class="guess-feedback" id="guess-feedback"></div>
+          <div class="guess-input-row">
+            <input id="guess-input" class="field-input" type="text" placeholder="Your answer…" autocomplete="off" spellcheck="false" />
+            <button id="submit-guess-btn" class="btn btn-primary">Guess</button>
+          </div>
+          <button id="next-hint-btn" class="btn btn-secondary full-width">Next Hint →</button>
+          <button id="give-up-btn" class="btn btn-resign full-width hidden">Give Up</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Round result ── -->
+  <div id="screen-result" class="screen center-screen hidden">
+    <div class="result-card">
+      <div class="result-icon" id="result-icon"></div>
+      <h2 class="result-title" id="result-title"></h2>
+      <p class="result-answer" id="result-answer"></p>
+      <div class="score-bars" id="result-scores"></div>
+      <div class="result-actions">
+        <button id="ready-btn" class="btn btn-primary">Ready for Next Round</button>
+        <div id="ready-waiting" class="ready-waiting hidden">
+          <div class="spinner-small"></div>
+          <span>Waiting for opponent…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Game over ── -->
+  <div id="screen-gameover" class="screen center-screen hidden">
+    <div class="gameover-card">
+      <div class="gameover-icon" id="gameover-icon"></div>
+      <h1 class="gameover-title" id="gameover-title"></h1>
+      <div class="score-bars" id="final-scores"></div>
+      <a href="/" class="btn btn-primary" style="margin-top:8px">Play Again</a>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/game.js"></script>
+</body>
+</html>
